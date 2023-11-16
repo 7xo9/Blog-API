@@ -55,7 +55,7 @@
 
     <div style="display: flex; justify-content: center; align-items: center; height: 50vh; flex-direction: column; width: 20vw;">
       <h1 style="text-align: start;">Your Writting: </h1>
-      <pre id="task"></pre>
+      <pre id="task" style="display: none;"></pre>
       <pre id="ntask"></pre>
     </div>
 
@@ -86,83 +86,104 @@
     let subBTN = document.getElementById("sub")
     let ntask = document.getElementById("ntask")
 
-    fetch("https://6552924d5c69a779032a2d8c.mockapi.io/blog")
-          .then(res => res.json())
-          .then(data => {
-            console.log(data);
-          
+function getDataFahad (){
 
-            for(let i =0; i <data.length; i++){
-              let newtask = document.createElement("p")
-              let deletebtn = document.createElement("button")
-              deletebtn.type = "submit"
-              id = data[i].id
-              deletebtn.innerText = `Delete `
-              newtask.innerHTML = data[i].task
-              ntask.appendChild(newtask)
-              ntask.appendChild(deletebtn)
-           
-              ntask.style.cssText = "display:flex;flex-direction: column;"
-              deletebtn.className = "btnn"
-            
-              deletebtn.addEventListener("click", ()=>{
+  fetch("https://6552924d5c69a779032a2d8c.mockapi.io/blog")
+      .then(res => res.json())
+      .then(data => {
+        console.log(data);
+      
 
-                fetch(`https://6552924d5c69a779032a2d8c.mockapi.io/blog/${id}`, {
-                  method: "DELETE"
-                })
-                  .then(res=>res.json())
-                  .then(data => {
-                    ntask.innerText = null
-                    fetch("https://6552924d5c69a779032a2d8c.mockapi.io/blog")
-                          .then(res => res.json())
-                          .then(data => {
-            console.log(data);
-          
+        for(let i =0; i <data.length; i++){
+          let newtask = document.createElement("p")
+          let deletebtn = document.createElement("button")
+          deletebtn.type = "submit"
+          id = data[i].id
+          deletebtn.innerText = `Delete `
+          newtask.innerHTML = data[i].task
+          ntask.appendChild(newtask)
+          ntask.appendChild(deletebtn)
+        
+          ntask.style.cssText = "display:flex;flex-direction: column;"
+          deletebtn.className = "btnn"
+        
+          deletebtn.addEventListener("click", ()=>{
 
-            for(let i =0; i <data.length; i++){
-              let newtask = document.createElement("p")
-              let deletebtn = document.createElement("button")
-              deletebtn.type = "submit"
-              deletebtn.innerText = `Delete`
-              newtask.innerHTML = data[i].task
-              ntask.appendChild(newtask)
-              ntask.appendChild(deletebtn)
-              id = data[i].id
-              ntask.style.cssText = "display:flex;flex-direction: column;"
-              deletebtn.className = "btnn"
-                    
+            fetch(`https://6552924d5c69a779032a2d8c.mockapi.io/blog/${id}`, {
+              method: "DELETE"
+            })
+              .then(res=>res.json())
+              .then(data => {
+                ntask.innerText = null
+                fetch("https://6552924d5c69a779032a2d8c.mockapi.io/blog")
+                      .then(res => res.json())
+                      .then(data => {
+        location.reload()
+      
 
-          
-                    
-              }})})
+        for(let i =0; i <data.length; i++){
+          let newtask = document.createElement("p")
+          let deletebtn = document.createElement("button")
+          deletebtn.type = "submit"
+          deletebtn.innerText = `Delete`
+          newtask.innerHTML = data[i].task
+          ntask.appendChild(newtask)
+          ntask.appendChild(deletebtn)
+          id = data[i].id
+          ntask.style.cssText = "display:flex;flex-direction: column;"
+          deletebtn.className = "btnn"
                 
-              })
-            }
-          })
 
+      
+                
+          }})})
+            
+          })
+        }
+      })
+}
+getDataFahad ()
 
     subBTN.addEventListener("click",()=>{
       let texterea = CKEDITOR.instances.textarea.getData();
       console.log("texterea");
+      
       task.innerHTML = texterea
-     
+      
 
       fetch("https://6552924d5c69a779032a2d8c.mockapi.io/blog" , {
         method: "POST",
         body: JSON.stringify({
           task: task.innerHTML
+          
         }),
          headers: {
           'Content-type': 'application/json; charset=UTF-8',
              }
         
-      })
+      }) .then(res => res.json())
+        .then(data => {
+          
+           ntask.innerHTML += `${data.task} <button onclick="deleteData(${data.id})">delet</button>`
+
+
+        })
     })
-        .then(res => res.JSON())
-        .then(data => console.log(data))
+       
 
 
+      function  deleteData(id){
+        
+        fetch(`https://6552924d5c69a779032a2d8c.mockapi.io/blog/${id}`, {
+              method: "DELETE"
+            })
+              .then(res=>res.json())
+              .then(()=>{
+location.reload()
 
+              })
+
+      }
 
   </script>
 </html>
