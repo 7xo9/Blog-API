@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <!-- Font Awesome -->
+   
+    <title>Your Blog</title>
+
+    <style>
+      .btnn{
+        cursor: pointer;
+        border: none;
+        padding: 12px 24px;
+        border-radius: 5px;
+        font-size: 14px;
+        letter-spacing: 1px;
+        transition: 0.3s; 
+        background-color: rgb(0, 102, 204);
+        color: white;
+    
+      }
+    </style>
+  </head>
+
+
+  <body>
+    
+    <div style="display: flex; align-items: center; justify-content: center; height: 50vh; width: 100vw; background-color: rgba(220, 220, 220, 0.769);">
+
+        <div style="background-color: white; width: 40vw; justify-content: center; display: flex; border-radius: 50px;">
+    
+          <h1>Welcome to your blog <span id="local"></span></h1>
+          <p></p>
+          
+        </div>
+        <div style="display: flex; float: left;">
+         <a href="index.html"> <button class="btnn">log out</button></a>
+        </div>
+
+      </div>
+
+
+    </div>
+    <!-- Section 2 -->
+    <script src="https://cdn.ckeditor.com/4.16.1/standard/ckeditor.js"></script>
+
+
+    <div>
+        <div class="" style="display: flex; justify-content: center; align-items: center; height: 30vh; width: 100vw; flex-direction: column;">
+          <textarea name="textarea" id="" cols="30" rows="10"></textarea>
+          <button id="sub" class="btnn" style="margin: 10px;">Submit</button>
+        </div>
+    </div>
+
+    <div style="display: flex; justify-content: center; align-items: center; height: 50vh; flex-direction: column; width: 20vw;">
+      <h1 style="text-align: start;">Your Writting: </h1>
+      <pre id="task"></pre>
+      <pre id="ntask"></pre>
+    </div>
+
+
+  </body>
+
+  <script>
+    let local = localStorage.getItem("Name")
+    let namee = document.getElementById("local")
+ 
+
+    if(local == null){
+       
+        window.location.href = "index.html"
+
+      }
+  
+  else{
+
+
+    }
+    namee.innerText = local
+
+    // textarea code
+
+    CKEDITOR.replace( 'textarea' );
+    let task = document.getElementById("task")
+    let subBTN = document.getElementById("sub")
+    let ntask = document.getElementById("ntask")
+
+    fetch("https://6552924d5c69a779032a2d8c.mockapi.io/blog")
+          .then(res => res.json())
+          .then(data => {
+            console.log(data);
+          
+
+            for(let i =0; i <data.length; i++){
+              let newtask = document.createElement("p")
+              let deletebtn = document.createElement("button")
+              deletebtn.type = "submit"
+              id = data[i].id
+              deletebtn.innerText = `Delete `
+              newtask.innerHTML = data[i].task
+              ntask.appendChild(newtask)
+              ntask.appendChild(deletebtn)
+           
+              ntask.style.cssText = "display:flex;flex-direction: column;"
+              deletebtn.className = "btnn"
+            
+              deletebtn.addEventListener("click", ()=>{
+
+                fetch(`https://6552924d5c69a779032a2d8c.mockapi.io/blog/${id}`, {
+                  method: "DELETE"
+                })
+                  .then(res=>res.json())
+                  .then(data => {
+                    ntask.innerText = null
+                    fetch("https://6552924d5c69a779032a2d8c.mockapi.io/blog")
+                          .then(res => res.json())
+                          .then(data => {
+            console.log(data);
+          
+
+            for(let i =0; i <data.length; i++){
+              let newtask = document.createElement("p")
+              let deletebtn = document.createElement("button")
+              deletebtn.type = "submit"
+              deletebtn.innerText = `Delete`
+              newtask.innerHTML = data[i].task
+              ntask.appendChild(newtask)
+              ntask.appendChild(deletebtn)
+              id = data[i].id
+              ntask.style.cssText = "display:flex;flex-direction: column;"
+              deletebtn.className = "btnn"
+                    
+
+          
+                    
+              }})})
+                
+              })
+            }
+          })
+
+
+    subBTN.addEventListener("click",()=>{
+      let texterea = CKEDITOR.instances.textarea.getData();
+      console.log("texterea");
+      task.innerHTML = texterea
+     
+
+      fetch("https://6552924d5c69a779032a2d8c.mockapi.io/blog" , {
+        method: "POST",
+        body: JSON.stringify({
+          task: task.innerHTML
+        }),
+         headers: {
+          'Content-type': 'application/json; charset=UTF-8',
+             }
+        
+      })
+    })
+        .then(res => res.JSON())
+        .then(data => console.log(data))
+
+
+
+
+  </script>
+</html>
